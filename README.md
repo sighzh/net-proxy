@@ -34,18 +34,28 @@ argosbx/
 ### 服务端（VPS）
 
 ```bash
-# 一键安装
-hypt="" vlpt="" bbr="" watchdog="" bash server/install.sh
+# 方式一：远程执行（推荐，无需下载）
+bash <(curl -s https://raw.githubusercontent.com/sighzh/net-proxy/main/server/install.sh)
+
+# 方式二：本地执行
+git clone https://github.com/sighzh/net-proxy.git
+cd net-proxy/server
+hypt="" vlpt="" bbr="" watchdog="" bash install.sh
 
 # 查看节点链接
 px list
 ```
 
-### 客户端（飞牛OS/Docker）
+### 客户端（本地）
 
 ```bash
-# 解析链接
-bash client/link-parser.sh
+# 方式一：远程执行（推荐，无需下载）
+bash <(curl -s https://raw.githubusercontent.com/sighzh/net-proxy/main/client/link-parser.sh)
+
+# 方式二：本地执行
+git clone https://github.com/sighzh/net-proxy.git
+cd net-proxy/client
+bash link-parser.sh
 
 # 启动代理
 cd ~/proxy && ./proxy.sh start
