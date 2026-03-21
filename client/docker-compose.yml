@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # ============================================================
+  # sing-box 代理客户端 - 支持TCP/UDP分流
+  # ============================================================
+  sing-box:
+    image: ghcr.io/sagernet/sing-box:latest
+    container_name: sing-box-proxy
+    restart: always
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./config.json:/etc/sing-box/config.json:ro
+    environment:
+      - TZ=Asia/Shanghai
+    command: run -c /etc/sing-box/config.json
+
+  # ============================================================
+  # 可选：HTTP代理认证（如需要密码保护）
+  # ============================================================
+  # tinyproxy:
+  #   image: stilleshan/tinyproxy
+  #   container_name: tinyproxy
+  #   restart: always
+  #   ports:
+  #     - "8888:8888"
+  #   environment:
+  #     - AUTH_USER=admin
+  #     - AUTH_PASSWORD=yourpassword

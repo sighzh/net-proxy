@@ -1,0 +1,97 @@
+{
+  "log": { "level": "info", "timestamp": true },
+  "dns": {
+    "servers": [
+      { "tag": "remote-dns", "address": "https://1.1.1.1/dns-query", "detour": "proxy" },
+      { "tag": "local-dns", "address": "223.5.5.5", "detour": "direct" }
+    ],
+    "rules": [
+      { "outbound": "any", "server": "local-dns" }
+    ],
+    "strategy": "ipv4_only"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "inet4_address": "172.19.0.1/30",
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "system",
+      "sniff": true
+    },
+    {
+      "type": "http",
+      "tag": "http-in",
+      "listen": "0.0.0.0",
+      "listen_port": 7890
+    },
+    {
+      "type": "socks",
+      "tag": "socks-in",
+      "listen": "0.0.0.0",
+      "listen_port": 7891
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "hysteria2",
+      "tag": "hy2-udp",
+      "server": "YOUR_SERVER_IP",
+      "server_port": 443,
+      "password": "YOUR_UUID",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.bing.com",
+        "insecure": true,
+        "alpn": ["h3"]
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-tcp",
+      "server": "YOUR_SERVER_IP",
+      "server_port": 443,
+      "uuid": "YOUR_UUID",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "apple.com",
+        "utls": { "enabled": true, "fingerprint": "chrome" },
+        "reality": {
+          "enabled": true,
+          "public_key": "YOUR_PUBLIC_KEY",
+          "short_id": "YOUR_SHORT_ID"
+        }
+      }
+    },
+    {
+      "type": "selector",
+      "tag": "proxy",
+      "outbounds": ["hy2-udp", "vless-tcp"],
+      "default": "hy2-udp"
+    },
+    { "type": "direct", "tag": "direct" },
+    { "type": "block", "tag": "block" },
+    { "type": "dns", "tag": "dns-out" }
+  ],
+  "route": {
+    "rules": [
+      { "protocol": "dns", "outbound": "dns-out" },
+      { "ip_is_private": true, "outbound": "direct" },
+      {
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          { "domain_suffix": [".cn", ".中国", ".公司", ".网络"] },
+          { "domain_keyword": ["baidu", "taobao", "tmall", "jd", "qq", "weixin", "weibo", "aliyun", "alipay", "163", "126", "sina", "sohu", "youku", "iqiyi", "bilibili", "douyin", "tiktok", "xiaoheihe", "csdn", "zhihu", "jianshu", "douban", "meituan", "dianping", "eleme", "hao123", "360", "2345"] },
+          { "ip_cidr": ["223.5.5.5/32", "119.29.29.29/32", "180.76.76.76/32", "114.114.114.114/32"] }
+        ],
+        "outbound": "direct"
+      },
+      { "network": "udp", "outbound": "hy2-udp" },
+      { "network": "tcp", "outbound": "vless-tcp" }
+    ],
+    "final": "proxy"
+  }
+}

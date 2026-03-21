@@ -1,0 +1,35 @@
+{
+  "name": "nodejs-argosbx",
+  "version": "2.0.0",
+  "description": "Argosbx 优化版本 - 带心跳、重连、健康检查",
+  "main": "index.js",
+  "author": "ygkkk",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "watchdog": "bash watchdog.sh start",
+    "watchdog:stop": "bash watchdog.sh stop",
+    "watchdog:status": "bash watchdog.sh status",
+    "health": "curl -s http://localhost:3000/health | jq .",
+    "stats": "curl -s http://localhost:3000/stats | jq ."
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "dependencies": {
+    "ws": "^8.19.0"
+  },
+  "keywords": [
+    "proxy",
+    "vless",
+    "vmess",
+    "websocket",
+    "argosbx"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yonggekkk/argosbx"
+  }
+}
