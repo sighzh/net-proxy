@@ -1,11 +1,11 @@
 #!/bin/bash
 # ============================================================
-# Argosbx Linux 客户端分流配置脚本
+# px Linux 客户端分流配置脚本
 # 支持: sing-box, v2ray, clash
 # 适用: 飞牛OS, Ubuntu, Debian, CentOS 等
 # ============================================================
 
-set -e
+set -euo pipefail
 
 # 颜色定义
 RED='\033[0;31m'
@@ -15,11 +15,11 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # 配置目录
-CONFIG_DIR="${HOME}/.config/argosbx-client"
+CONFIG_DIR="${HOME}/.config/px-client"
 mkdir -p "$CONFIG_DIR"
 
 echo "=========================================="
-echo "  Argosbx Linux 客户端分流配置"
+echo "  px Linux 客户端分流配置"
 echo "=========================================="
 echo
 
@@ -354,9 +354,9 @@ PROXY_EOF
 generate_systemd_service() {
     local client_type="$1"
     
-    cat > "${CONFIG_DIR}/argosbx-client.service" << EOF
+    cat > "${CONFIG_DIR}/px-client.service" << EOF
 [Unit]
-Description=Argosbx Client (${client_type})
+Description=px Client (${client_type})
 After=network.target
 
 [Service]
@@ -369,13 +369,13 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 EOF
-    echo "✅ systemd 服务文件已生成: ${CONFIG_DIR}/argosbx-client.service"
+    echo "✅ systemd 服务文件已生成: ${CONFIG_DIR}/px-client.service"
     echo ""
     echo "安装服务:"
-    echo "  sudo cp ${CONFIG_DIR}/argosbx-client.service /etc/systemd/system/"
+    echo "  sudo cp ${CONFIG_DIR}/px-client.service /etc/systemd/system/"
     echo "  sudo systemctl daemon-reload"
-    echo "  sudo systemctl enable argosbx-client"
-    echo "  sudo systemctl start argosbx-client"
+    echo "  sudo systemctl enable px-client"
+    echo "  sudo systemctl start px-client"
 }
 
 # ==================== 主函数 ====================
