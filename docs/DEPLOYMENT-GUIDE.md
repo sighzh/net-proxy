@@ -1,4 +1,4 @@
-# Argosbx 优化版 - 最终部署指南
+# px 优化版 - 最终部署指南
 
 ## 🎯 针对洛杉矶节点的完整解决方案
 
@@ -10,13 +10,13 @@
 
 ```bash
 # Hysteria2 + Vless-Reality 双协议 + 全部优化
-hypt="" vlpt="" bbr="" watchdog="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/server/install.sh)
+hypt="" vlpt="" bbr="" watchdog="" bash <(curl -Ls https://raw.githubusercontent.com/sighzh/net-proxy/main/server/install.sh)
 ```
 
 ### 2. 本地部署
 
 ```bash
-cd /home/z/my-project/argosbx
+cd /home/z/my-project/net-proxy
 hypt="" vlpt="" bbr="" watchdog="" bash server/install.sh
 ```
 
@@ -265,7 +265,7 @@ cat ~/agsbx/watchdog.log
 ## 八、文件清单
 
 ```
-argosbx/
+px/
 ├── server/install.sh          # 优化版一键脚本
 ├── dual-protocol.sh        # 双协议配置助手
 ├── QUICK-START.md          # 快速启动指南
@@ -300,5 +300,5 @@ argosbx/
 ### 一键命令
 
 ```bash
-hypt="" vlpt="" bbr="" watchdog="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/server/install.sh)
+hypt="" vlpt="" bbr="" watchdog="" bash <(curl -Ls https://raw.githubusercontent.com/sighzh/net-proxy/main/server/install.sh)
 ```

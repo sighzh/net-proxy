@@ -1,11 +1,11 @@
 #!/bin/bash
 # ============================================================
-# Argosbx 网络优化脚本 - BBR + TCP/UDP 内核参数优化
+# px 网络优化脚本 - BBR + TCP/UDP 内核参数优化
 # 版本: v2.0
 # 适用: 洛杉矶等海外高延迟节点
 # ============================================================
 
-set -e
+set -euo pipefail
 
 # 颜色定义
 RED='\033[0;31m'
@@ -21,8 +21,8 @@ log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 log_step() { echo -e "${BLUE}[STEP]${NC} $1"; }
 
 # 配置文件路径
-SYSCTL_CONF="/etc/sysctl.d/99-argosbx-optimization.conf"
-BACKUP_CONF="/etc/sysctl.d/99-argosbx-optimization.conf.bak"
+SYSCTL_CONF="/etc/sysctl.d/99-px-optimization.conf"
+BACKUP_CONF="/etc/sysctl.d/99-px-optimization.conf.bak"
 
 # ==================== 检测系统信息 ====================
 detect_system() {
@@ -135,7 +135,7 @@ optimize_tcp() {
     
     cat > "$SYSCTL_CONF" << 'EOF'
 # ============================================================
-# Argosbx 网络优化配置
+# px 网络优化配置
 # 针对: 洛杉矶等海外高延迟节点
 # ============================================================
 
@@ -145,8 +145,7 @@ net.ipv4.tcp_congestion_control = bbr
 
 # ==================== TCP 缓冲区优化 ====================
 # TCP 接收缓冲区 (针对高延迟大带宽)
-net.core.rmem_max = 67108864
-net.core.wmem_max = 67108864
+# 注意: rmem_max/wmem_max 使用更大值在UDP优化部分定义
 net.core.rmem_default = 1048576
 net.core.wmem_default = 1048576
 net.ipv4.tcp_rmem = 4096 87380 67108864
@@ -208,8 +207,7 @@ net.ipv4.udp_rmem_min = 8192
 net.ipv4.udp_wmem_min = 8192
 
 # ==================== 网络队列优化 ====================
-# 网络设备积压队列
-net.core.netdev_max_backlog = 65536
+# netdev_max_backlog 已在UDP优化部分定义
 
 # SOMAXCONN
 net.core.somaxconn = 65535
@@ -277,10 +275,10 @@ optimize_limits() {
     LIMITS_FILE="/etc/security/limits.conf"
     
     # 添加优化配置
-    grep -q "argosbx-optimization" "$LIMITS_FILE" 2>/dev/null || {
+    grep -q "px-optimization" "$LIMITS_FILE" 2>/dev/null || {
         cat >> "$LIMITS_FILE" << 'EOF'
 
-# argosbx-optimization: 增加文件描述符限制
+# px-optimization: 增加文件描述符限制
 * soft nofile 1048576
 * hard nofile 1048576
 * soft nproc 65535
@@ -376,7 +374,7 @@ main() {
         install|start|"")
             echo ""
             echo "=========================================="
-            echo "   Argosbx 网络优化脚本 v2.0"
+            echo "   px 网络优化脚本 v2.0"
             echo "   针对: 洛杉矶等海外高延迟节点"
             echo "=========================================="
             echo ""

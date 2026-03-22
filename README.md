@@ -1,4 +1,4 @@
-# Argosbx 优化版
+# px 优化版
 
 > 洛杉矶节点延迟优化方案：BBR + TCP/UDP分流 + 进程监控
 
@@ -7,7 +7,7 @@
 ## 📁 目录结构
 
 ```
-argosbx/
+net-proxy/
 ├── server/              # 服务端（VPS部署）
 │   ├── install.sh       # 一键安装脚本
 │   ├── network-optimize.sh  # BBR网络优化

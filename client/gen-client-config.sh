@@ -1,10 +1,10 @@
 #!/bin/bash
 # ============================================================
-# Argosbx 客户端配置快速生成器
+# px 客户端配置快速生成器
 # 用法: ./gen-client-config.sh <服务器IP> <Hysteria2端口> <Vless端口> <UUID>
 # ============================================================
 
-set -e
+set -euo pipefail
 
 # 颜色
 GREEN='\033[0;32m'
@@ -23,7 +23,7 @@ CONFIG_DIR="${HOME}/.config/sing-box"
 mkdir -p "$CONFIG_DIR"
 
 echo -e "${BLUE}=========================================="
-echo "  Argosbx 客户端配置生成器"
+echo "  px 客户端配置生成器"
 echo -e "==========================================${NC}"
 echo
 echo "服务器: $SERVER_IP"

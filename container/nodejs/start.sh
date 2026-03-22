@@ -23,12 +23,12 @@ export warp=${warp}
 export name=${name}
 v46url="https://icanhazip.com"
 showmode(){
-echo "px脚本项目地址：https://github.com/grumpy-gundam/px"
+echo "px脚本项目地址：https://github.com/sighzh/net-proxy"
 echo "---------------------------------------------------------"
 echo
 }
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "暴躁高达Github项目 ：github.com/grumpy-gundam"
+echo "暴躁高达Github项目 ：github.com/sighzh"
 echo "暴躁高达Blogger博客 ：grumpy-gundam.blogspot.com"
 echo "暴躁高达YouTube频道 ：www.youtube.com/@grumpy-gundam"
 echo "px一键无交互小钢炮脚本💣"
@@ -140,7 +140,10 @@ echo
 echo "=========启用xray内核========="
 mkdir -p "$HOME/agsbx/xrk"
 if [ ! -e "$HOME/agsbx/xray" ]; then
-url="https://github.com/grumpy-gundam/px/releases/download/px/xray-$cpu"; out="$HOME/agsbx/xray"; (command -v curl >/dev/null 2>&1 && curl -Lo "$out" -# --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -O "$out" --tries=2 "$url")
+# TODO: 确认 xray 版本号，替换为实际可用版本
+[ "$cpu" = "arm64" ] && xray_arch="arm64-v8a" || xray_arch="64"
+url="https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-${xray_arch}.zip"; out="$HOME/agsbx/xray.zip"; (command -v curl >/dev/null 2>&1 && curl -Lo "$out" -# --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -O "$out" --tries=2 "$url")
+cd "$HOME/agsbx" && unzip -o xray.zip xray && rm -f xray.zip && cd - >/dev/null
 chmod +x "$HOME/agsbx/xray"
 sbcore=$("$HOME/agsbx/xray" version 2>/dev/null | awk '/^Xray/{print $2}')
 echo "已安装Xray正式版内核：$sbcore"
@@ -376,7 +379,9 @@ installsb(){
 echo
 echo "=========启用Sing-box内核========="
 if [ ! -e "$HOME/agsbx/sing-box" ]; then
-url="https://github.com/grumpy-gundam/px/releases/download/px/sing-box-$cpu"; out="$HOME/agsbx/sing-box"; (command -v curl>/dev/null 2>&1 && curl -Lo "$out" -# --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -O "$out" --tries=2 "$url")
+# TODO: 确认 sing-box 版本号，替换为实际可用版本
+url="https://github.com/SagerNet/sing-box/releases/latest/download/sing-box-linux-${cpu}.tar.gz"; out="$HOME/agsbx/sing-box.tar.gz"; (command -v curl>/dev/null 2>&1 && curl -Lo "$out" -# --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -O "$out" --tries=2 "$url")
+cd "$HOME/agsbx" && tar xzf sing-box.tar.gz --strip-components=1 -C . sing-box-linux-${cpu}/sing-box && rm -f sing-box.tar.gz && cd - >/dev/null
 chmod +x "$HOME/agsbx/sing-box"
 sbcore=$("$HOME/agsbx/sing-box" version 2>/dev/null | awk '/version/{print $NF}')
 echo "已安装Sing-box正式版内核：$sbcore"
@@ -395,8 +400,9 @@ command -v openssl >/dev/null 2>&1 && openssl ecparam -genkey -name prime256v1 -
 command -v openssl >/dev/null 2>&1 && chmod 600 "$HOME/agsbx/private.key"
 command -v openssl >/dev/null 2>&1 && openssl req -new -x509 -days 36500 -key "$HOME/agsbx/private.key" -out "$HOME/agsbx/cert.pem" -subj "/CN=www.bing.com" >/dev/null 2>&1
 if [ ! -f "$HOME/agsbx/private.key" ]; then
-url="https://github.com/grumpy-gundam/px/releases/download/px/private.key"; out="$HOME/agsbx/private.key"; (command -v curl>/dev/null 2>&1 && curl -Ls -o "$out" --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -q -O "$out" --tries=2 "$url")
-url="https://github.com/grumpy-gundam/px/releases/download/px/cert.pem"; out="$HOME/agsbx/cert.pem"; (command -v curl>/dev/null 2>&1 && curl -Ls -o "$out" --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -q -O "$out" --tries=2 "$url")
+# TODO: 替换为 sighzh/net-proxy release 中的实际 key/cert 地址
+url="https://github.com/sighzh/net-proxy/releases/download/px/private.key"; out="$HOME/agsbx/private.key"; (command -v curl>/dev/null 2>&1 && curl -Ls -o "$out" --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -q -O "$out" --tries=2 "$url")
+url="https://github.com/sighzh/net-proxy/releases/download/px/cert.pem"; out="$HOME/agsbx/cert.pem"; (command -v curl>/dev/null 2>&1 && curl -Ls -o "$out" --retry 2 "$url") || (command -v wget>/dev/null 2>&1 && timeout 3 wget -q -O "$out" --tries=2 "$url")
 fi
 if [ -n "$hypt" ]; then
 if [ -z "$hypt" ] && [ ! -e "$HOME/agsbx/hypt" ]; then
@@ -1006,6 +1012,7 @@ echo "$vl_vx_link" >> "$HOME/agsbx/jh.txt"
 echo "$vl_vx_link"
 echo
 if [ -f "$HOME/agsbx/cdnym" ]; then
+# TODO: 替换 CDN 域名 grumpy-gundam.dpdns.org 为用户自定义域名
 echo "💣【 Vless-xhttp-ecn-cdn 】支持ENC加密，节点信息如下："
 echo "注：默认地址 yg数字.grumpy-gundam.dpdns.org 可自行更换优选IP域名，如是回源端口需手动修改443或者80系端口"
 vl_vx_cdn_link="vless://$uuid@yg$(cfip).grumpy-gundam.dpdns.org:$vxpt?encryption=$enkey&flow=xtls-rprx-vision&type=xhttp&host=$xvvmcdnym&path=$uuid-vx&mode=auto#${sxname}vl-xhttp-$hostname"

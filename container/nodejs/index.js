@@ -187,7 +187,7 @@ class ConnectionRetryManager {
 }
 
 // ==================== 启动脚本 ====================
-fs.chmod("start.sh", 0o777, (err) => {
+fs.chmod("start.sh", 0o755, (err) => {
     if (err) {
         console.error(`start.sh empowerment failed: ${err}`);
         return;
@@ -239,7 +239,7 @@ const server = http.createServer((req, res) => {
     
     if (url === '/') {
         res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-        res.end('🟢恭喜！Argosbx小钢炮脚本-nodejs版部署成功！\n\n查看节点信息路径：/你的uuid\n健康检查路径：/health\n统计信息路径：/stats');
+        res.end('🟢恭喜！px小钢炮脚本-nodejs版部署成功！\n\n查看节点信息路径：/你的uuid\n健康检查路径：/health\n统计信息路径：/stats');
         return;
     }
 

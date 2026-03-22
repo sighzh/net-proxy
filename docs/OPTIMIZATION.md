@@ -1,4 +1,4 @@
-# Argosbx 优化版本说明
+# px 优化版本说明
 
 ## 版本信息
 - 原版本: V25.11.20
@@ -143,7 +143,7 @@ connection: {
 ## 文件结构
 
 ```
-argosbx/
+px/
 ├── container/
 │   └── nodejs/
 │       ├── index.js           # 优化后的主服务文件
@@ -199,15 +199,15 @@ const CONFIG = {
 
 ```bash
 # 构建镜像
-docker build -t argosbx-optimized ./container/nodejs
+docker build -t px-optimized ./container/nodejs
 
 # 运行容器
 docker run -d \
-  --name argosbx \
+  --name px \
   -e PORT=3000 \
   -e uuid="your-uuid" \
   -p 3000:3000 \
-  argosbx-optimized
+  px-optimized
 ```
 
 ### 手动部署

@@ -1,7 +1,9 @@
 #!/bin/bash
-# Argosbx 进程监控和自动重启脚本
+# px 进程监控和自动重启脚本
 # 版本: v2.0
 # 功能: 监控代理进程状态，自动重启崩溃的服务
+
+set -euo pipefail
 
 # ==================== 配置参数 ====================
 WATCHDOG_CONFIG="${HOME}/agsbx/watchdog.conf"

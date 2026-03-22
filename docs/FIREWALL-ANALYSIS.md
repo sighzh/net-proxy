@@ -84,7 +84,7 @@ Reality > AnyTLS > SS > VMess > Tuic > Hysteria2
 
 **启动命令**：
 ```bash
-hypt="" vlpt="" bbr="" watchdog="" bash argosbx-opt.sh
+hypt="" vlpt="" bbr="" watchdog="" bash px-opt.sh
 ```
 
 #### 方案 B：分流模式
@@ -111,7 +111,7 @@ hypt="" vlpt="" bbr="" watchdog="" bash argosbx-opt.sh
 
 **启动命令**：
 ```bash
-vlpt="" anpt="" bbr="" watchdog="" bash argosbx-opt.sh
+vlpt="" anpt="" bbr="" watchdog="" bash px-opt.sh
 ```
 
 ---
@@ -142,8 +142,8 @@ vlpt="" anpt="" bbr="" watchdog="" bash argosbx-opt.sh
 
 ```bash
 # 使用常见端口伪装
-hypt="443" bash argosbx-opt.sh   # HTTPS 端口
-hypt="8443" bash argosbx-opt.sh  # 备用 HTTPS
+hypt="443" bash px-opt.sh   # HTTPS 端口
+hypt="8443" bash px-opt.sh  # 备用 HTTPS
 ```
 
 ### 3. 客户端配置优化
@@ -177,7 +177,7 @@ hypt="8443" bash argosbx-opt.sh  # 备用 HTTPS
 
 ```bash
 # Hysteria2 + Vless-Reality 双协议
-hypt="" vlpt="" bbr="" watchdog="" bash argosbx-opt.sh
+hypt="" vlpt="" bbr="" watchdog="" bash px-opt.sh
 ```
 
 **特点**：
@@ -188,7 +188,7 @@ hypt="" vlpt="" bbr="" watchdog="" bash argosbx-opt.sh
 
 ```bash
 # 纯 TCP 协议，最强抗封锁
-vlpt="" anpt="" bbr="" watchdog="" bash argosbx-opt.sh
+vlpt="" anpt="" bbr="" watchdog="" bash px-opt.sh
 ```
 
 **特点**：
@@ -199,7 +199,7 @@ vlpt="" anpt="" bbr="" watchdog="" bash argosbx-opt.sh
 
 ```bash
 # Argo 隧道 + CDN
-vmpt="" argo="vmpt" bbr="" watchdog="" bash argosbx-opt.sh
+vmpt="" argo="vmpt" bbr="" watchdog="" bash px-opt.sh
 ```
 
 ---

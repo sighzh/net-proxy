@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 # ============================================================
-# Argosbx 优化版一键脚本 v2.0
-# 基于: yonggekkk/argosbx
+# px 优化版一键脚本 v2.0
+# 基于: sighzh/net-proxy
 # 新增: BBR优化 + 进程监控 + 心跳保活 + 健康检查
 # 命令: px (proxy缩写，简单好记)
 # ============================================================
+set -euo pipefail
 export LANG=en_US.UTF-8
 
 # ==================== 变量解析 ====================
@@ -26,10 +27,10 @@ export LANG=en_US.UTF-8
 # 检查是否已运行
 if find /proc/*/exe -type l 2>/dev/null | grep -E '/proc/[0-9]+/exe' | xargs -r readlink 2>/dev/null | grep -Eq 'agsbx/(s|x)' || pgrep -f 'agsbx/(s|x)' >/dev/null 2>&1; then
 if [ "$1" = "rep" ]; then
-[ "$vwp" = yes ] || [ "$sop" = yes ] || [ "$vxp" = yes ] || [ "$ssp" = yes ] || [ "$vlp" = yes ] || [ "$vmp" = yes ] || [ "$hyp" = yes ] || [ "$tup" = yes ] || [ "$xhp" = yes ] || [ "$anp" = yes ] || [ "$arp" = yes ] || { echo "提示：rep重置协议时，请在脚本前至少设置一个协议变量哦，再见！💣"; exit; }
+[ "${vwp:-}" = yes ] || [ "${sop:-}" = yes ] || [ "${vxp:-}" = yes ] || [ "${ssp:-}" = yes ] || [ "${vlp:-}" = yes ] || [ "${vmp:-}" = yes ] || [ "${hyp:-}" = yes ] || [ "${tup:-}" = yes ] || [ "${xhp:-}" = yes ] || [ "${anp:-}" = yes ] || [ "${arp:-}" = yes ] || { echo "提示：rep重置协议时，请在脚本前至少设置一个协议变量哦，再见！💣"; exit; }
 fi
 else
-[ "$1" = "del" ] || [ "$1" = "opt" ] || [ "$1" = "bbr" ] || [ "$vwp" = yes ] || [ "$sop" = yes ] || [ "$vxp" = yes ] || [ "$ssp" = yes ] || [ "$vlp" = yes ] || [ "$vmp" = yes ] || [ "$hyp" = yes ] || [ "$tup" = yes ] || [ "$xhp" = yes ] || [ "$anp" = yes ] || [ "$arp" = yes ] || { echo "提示：未安装argosbx脚本，请在脚本前至少设置一个协议变量哦，再见！💣"; exit; }
+[ "$1" = "del" ] || [ "$1" = "opt" ] || [ "$1" = "bbr" ] || [ "${vwp:-}" = yes ] || [ "${sop:-}" = yes ] || [ "${vxp:-}" = yes ] || [ "${ssp:-}" = yes ] || [ "${vlp:-}" = yes ] || [ "${vmp:-}" = yes ] || [ "${hyp:-}" = yes ] || [ "${tup:-}" = yes ] || [ "${xhp:-}" = yes ] || [ "${anp:-}" = yes ] || [ "${arp:-}" = yes ] || { echo "提示：未安装px脚本，请在脚本前至少设置一个协议变量哦，再见！💣"; exit; }
 fi
 
 export uuid=${uuid:-''}
@@ -55,13 +56,51 @@ export name=${name:-''}
 export oap=${oap:-''}
 
 v46url="https://icanhazip.com"
-agsbxurl="https://raw.githubusercontent.com/yonggekkk/argosbx/main/argosbx.sh"
+agsbxurl="https://raw.githubusercontent.com/sighzh/net-proxy/main/server/install.sh"
+
+# ==================== 安全下载函数 ====================
+download_and_verify() {
+    local url="$1"
+    local outfile="$2"
+    local expected_sha256="${3:-}"
+
+    if command -v curl >/dev/null 2>&1; then
+        curl -Ls "$url" -o "$outfile" 2>/dev/null
+    elif command -v wget >/dev/null 2>&1; then
+        wget -qO "$outfile" "$url" 2>/dev/null
+    else
+        echo "❌ 错误: 需要 curl 或 wget" >&2
+        return 1
+    fi
+
+    if [ ! -f "$outfile" ] || [ ! -s "$outfile" ]; then
+        echo "❌ 错误: 下载失败 ($url)" >&2
+        rm -f "$outfile"
+        return 1
+    fi
+
+    if [ -n "$expected_sha256" ]; then
+        local actual_sha256=$(sha256sum "$outfile" 2>/dev/null | awk '{print $1}')
+        if [ "$actual_sha256" != "$expected_sha256" ]; then
+            echo "❌ 错误: SHA256校验失败" >&2
+            echo "   期望: $expected_sha256" >&2
+            echo "   实际: $actual_sha256" >&2
+            rm -f "$outfile"
+            return 1
+        fi
+        echo "✅ SHA256校验通过"
+    else
+        echo "⚠️  警告: 未设置SHA256校验值，跳过完整性验证" >&2
+    fi
+
+    return 0
+}
 
 # ==================== 显示帮助 ====================
 showmode(){
-echo "Argosbx优化版脚本 v2.0 - 一键SSH命令"
+echo "px优化版脚本 v2.0 - 一键SSH命令"
 echo "---------------------------------------------------------"
-echo "主脚本: bash <(curl -Ls https://your-domain/argosbx-opt.sh)"
+echo "主脚本: bash <(curl -Ls https://your-domain/px-opt.sh)"
 echo ""
 echo "【协议变量】(必选其一)"
 echo "  hypt=\"\"    - Hysteria2 (推荐，延迟最低)"
@@ -90,7 +129,7 @@ echo
 }
 
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "Argosbx 优化版一键脚本 💣 v2.0"
+echo "px 优化版一键脚本 💣 v2.0"
 echo "新增: BBR优化 + 进程监控 + 心跳保活 + 健康检查"
 echo "命令: px (proxy缩写，简单好记)"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -136,7 +175,7 @@ modprobe tcp_bbr 2>/dev/null || true
 echo "tcp_bbr" > /etc/modules-load.d/tcp_bbr.conf 2>/dev/null || true
 
 # 创建 sysctl 优化配置
-cat > /etc/sysctl.d/99-argosbx-bbr.conf << 'EOF'
+cat > /etc/sysctl.d/99-px-bbr.conf << 'EOF'
 # BBR 拥塞控制
 net.core.default_qdisc = fq
 net.ipv4.tcp_congestion_control = bbr
@@ -166,7 +205,7 @@ fs.file-max = 1048576
 EOF
 
 # 应用配置
-sysctl -p /etc/sysctl.d/99-argosbx-bbr.conf > /dev/null 2>&1
+sysctl -p /etc/sysctl.d/99-px-bbr.conf > /dev/null 2>&1
 
 # 验证
 NEW_CC=$(sysctl -n net.ipv4.tcp_congestion_control 2>/dev/null || echo "unknown")
@@ -196,7 +235,7 @@ echo "=========启用进程监控========="
 
 cat > "$HOME/agsbx/watchdog.sh" << 'WATCHDOG_EOF'
 #!/bin/bash
-# Argosbx 进程监控脚本
+# px 进程监控脚本
 WATCHDOG_LOG="$HOME/agsbx/watchdog.log"
 PID_DIR="$HOME/agsbx/pids"
 mkdir -p "$PID_DIR"
@@ -279,15 +318,33 @@ install_command() {
     
     cat > "$CMD_PATH" << 'CMD_EOF'
 #!/bin/bash
-# px - proxy 命令别名
-SCRIPT_URL="https://raw.githubusercontent.com/yonggekkk/argosbx/main/argosbx.sh"
+# px - proxy 命令别名（安全下载版）
+SCRIPT_URL="https://raw.githubusercontent.com/sighzh/net-proxy/main/server/install.sh"
+
+_px_download_and_run() {
+    local url="$1"; shift
+    local tmpfile
+    tmpfile=$(mktemp "/tmp/agsbx_px_XXXXXX.sh" || echo "/tmp/agsbx_px_$$.sh")
+    if command -v curl >/dev/null 2>&1; then
+        curl -Ls "$url" -o "$tmpfile" 2>/dev/null
+    elif command -v wget >/dev/null 2>&1; then
+        wget -qO "$tmpfile" "$url" 2>/dev/null
+    else
+        echo "❌ 需要 curl 或 wget" >&2; return 1
+    fi
+    if [ ! -f "$tmpfile" ] || [ ! -s "$tmpfile" ]; then
+        echo "❌ 下载失败" >&2; rm -f "$tmpfile"; return 1
+    fi
+    bash "$tmpfile" "$@"
+    rm -f "$tmpfile"
+}
 
 case "$1" in
     list|rep|res|del|upx|ups)
-        bash <(curl -Ls "$SCRIPT_URL" 2>/dev/null || wget -qO- "$SCRIPT_URL" 2>/dev/null) "$@"
+        _px_download_and_run "$SCRIPT_URL" "$@"
         ;;
     opt)
-        bash <(curl -Ls "$SCRIPT_URL" 2>/dev/null || wget -qO- "$SCRIPT_URL" 2>/dev/null) "opt"
+        _px_download_and_run "$SCRIPT_URL" "opt"
         ;;
     bbr)
         sysctl net.ipv4.tcp_congestion_control
@@ -307,7 +364,7 @@ case "$1" in
         echo "  opt   - 安装网络优化"
         ;;
     *)
-        bash <(curl -Ls "$SCRIPT_URL" 2>/dev/null || wget -qO- "$SCRIPT_URL" 2>/dev/null) "$@"
+        _px_download_and_run "$SCRIPT_URL" "$@"
         ;;
 esac
 CMD_EOF
@@ -324,8 +381,15 @@ CMD_EOF
 
 # ==================== 处理快捷命令 ====================
 if [ "$1" = "list" ] || [ "$1" = "rep" ] || [ "$1" = "res" ] || [ "$1" = "del" ] || [ "$1" = "upx" ] || [ "$1" = "ups" ]; then
-# 调用原脚本处理
-exec bash <(curl -Ls "$agsbxurl" 2>/dev/null || wget -qO- "$agsbxurl" 2>/dev/null) "$@"
+# 调用原脚本处理（安全下载）
+TMP_SCRIPT="/tmp/agsbx_XXXXXX.sh"
+TMP_SCRIPT=$(mktemp "${TMP_SCRIPT}" || echo "/tmp/agsbx_dl_$$.sh")
+if download_and_verify "$agsbxurl" "$TMP_SCRIPT"; then
+    exec bash "$TMP_SCRIPT" "$@"
+else
+    rm -f "$TMP_SCRIPT"
+    exit 1
+fi
 fi
 
 # 单独优化命令
@@ -342,6 +406,14 @@ exit 0
 fi
 
 # ==================== 主安装流程 ====================
+
+# Root权限检查
+if [[ $EUID -ne 0 ]]; then
+    echo "❌ 需要root权限运行此脚本"
+    echo "请使用: sudo bash $0"
+    exit 1
+fi
+
 if [ ! -f sbx_update ]; then
 echo "执行脚本中，请稍后"
 if command -v apk >/dev/null 2>&1; then
@@ -354,17 +426,26 @@ touch sbx_update
 fi
 
 # ==================== 安装 BBR 优化 ====================
-if [ "$bbrenable" = "yes" ]; then
+if [ "${bbrenable:-}" = "yes" ]; then
 install_bbr
 fi
 
 # ==================== 调用原脚本安装代理 ====================
 echo
 echo "=========安装代理服务========="
-bash <(curl -Ls "$agsbxurl" 2>/dev/null || wget -qO- "$agsbxurl" 2>/dev/null)
+TMP_SCRIPT="/tmp/agsbx_XXXXXX.sh"
+TMP_SCRIPT=$(mktemp "${TMP_SCRIPT}" || echo "/tmp/agsbx_main_$$.sh")
+if download_and_verify "$agsbxurl" "$TMP_SCRIPT"; then
+    bash "$TMP_SCRIPT"
+    rm -f "$TMP_SCRIPT"
+else
+    rm -f "$TMP_SCRIPT"
+    echo "❌ 下载代理安装脚本失败，终止安装"
+    exit 1
+fi
 
 # ==================== 安装进程监控 ====================
-if [ "$watchdogenable" = "yes" ]; then
+if [ "${watchdogenable:-}" = "yes" ]; then
 install_watchdog
 fi
 
@@ -374,7 +455,7 @@ install_command
 # ==================== 安装完成提示 ====================
 echo
 echo "=========================================="
-echo "   Argosbx 优化版安装完成！"
+echo "   px 优化版安装完成！"
 echo "=========================================="
 echo
 echo "【优化状态】"

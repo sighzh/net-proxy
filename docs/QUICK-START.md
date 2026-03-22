@@ -1,4 +1,4 @@
-# Argosbx 优化版 - 快速启动指南
+# px 优化版 - 快速启动指南
 
 ## 🚀 命令说明
 
@@ -12,23 +12,23 @@
 
 ```bash
 # Hysteria2 协议（推荐，延迟最低）
-hypt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/server/install.sh)
+hypt="" bash <(curl -Ls https://raw.githubusercontent.com/sighzh/net-proxy/main/server/install.sh)
 
 # Tuic 协议
-tupt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/server/install.sh)
+tupt="" bash <(curl -Ls https://raw.githubusercontent.com/sighzh/net-proxy/main/server/install.sh)
 
 # Vless-TCP-Reality 协议
-vlpt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/server/install.sh)
+vlpt="" bash <(curl -Ls https://raw.githubusercontent.com/sighzh/net-proxy/main/server/install.sh)
 ```
 
 ### 优化版用法（推荐）
 
 ```bash
 # Hysteria2 + BBR优化 + 进程监控（推荐）
-hypt="" bbr="" watchdog="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/server/install.sh)
+hypt="" bbr="" watchdog="" bash <(curl -Ls https://raw.githubusercontent.com/sighzh/net-proxy/main/server/install.sh)
 
 # 多协议组合 + 全部优化
-hypt="" tupt="" vlpt="" bbr="" watchdog="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/server/install.sh)
+hypt="" tupt="" vlpt="" bbr="" watchdog="" bash <(curl -Ls https://raw.githubusercontent.com/sighzh/net-proxy/main/server/install.sh)
 ```
 
 ---
@@ -72,7 +72,7 @@ px del     # 卸载
 
 ```bash
 # 最佳配置：Hysteria2 + BBR + 进程监控
-hypt="" bbr="" watchdog="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/server/install.sh)
+hypt="" bbr="" watchdog="" bash <(curl -Ls https://raw.githubusercontent.com/sighzh/net-proxy/main/server/install.sh)
 ```
 
 **预期效果**：

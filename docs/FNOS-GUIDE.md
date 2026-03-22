@@ -19,8 +19,8 @@ vless://uuid@server:port?security=reality&sni=apple.com&pbk=xxx&sid=xxx#节点�
 
 ```bash
 # 解压
-unzip argosbx-optimized.zip
-cd argosbx
+unzip px-optimized.zip
+cd px
 
 # 运行解析脚本
 bash client/link-parser.sh
